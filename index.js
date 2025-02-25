@@ -1,28 +1,21 @@
 const studentForm = document.getElementById('studentForm');
 const studentTableBody = document.getElementById('studentTable').getElementsByTagName('tbody')[0];
 
-const students = [];
+let students = JSON.parse(localStorage.getItem('students')) || [];
 let editingIndex = -1;
 
 // Function for form submission and add/edit student data
 studentForm.addEventListener('submit', function (event) {
     event.preventDefault();
 
-    // Geting the form field values
+    // Getting the form field values
     const name = document.getElementById('name').value;
     const Id = document.getElementById('Id').value;
     const email = document.getElementById('email').value;
     const contact = document.getElementById('contact').value;
 
-
     // Create a new student object
-    const newStudent = {
-        name: name,
-        Id: Id,
-        email: email,
-        contact: contact
-    };
-
+    const newStudent = { name, Id, email, contact };
 
     if (editingIndex === -1) {
         students.push(newStudent);
@@ -30,6 +23,9 @@ studentForm.addEventListener('submit', function (event) {
         students[editingIndex] = newStudent;
         editingIndex = -1;
     }
+
+    // Save to local storage
+    localStorage.setItem('students', JSON.stringify(students));
 
     // Clear the form fields
     studentForm.reset();
@@ -77,8 +73,6 @@ function displayStudentRecords() {
 
         // Append the row to the table body
         studentTableBody.appendChild(row);
-        console.log(studentTableBody);
-
     });
 }
 
@@ -91,7 +85,6 @@ function editStudent(index) {
     document.getElementById('email').value = student.email;
     document.getElementById('contact').value = student.contact;
 
-
     // Set the editingIndex to the index of the student being edited
     editingIndex = index;
 }
@@ -101,6 +94,12 @@ function deleteStudent(index) {
     // Remove the student from the array
     students.splice(index, 1);
 
+    // Save updated list to local storage
+    localStorage.setItem('students', JSON.stringify(students));
+
     // Display the updated student records
     displayStudentRecords();
 }
+
+// Load data from local storage when the page loads
+window.addEventListener('load', displayStudentRecords);
